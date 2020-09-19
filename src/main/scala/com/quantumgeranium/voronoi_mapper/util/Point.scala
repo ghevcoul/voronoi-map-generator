@@ -6,4 +6,6 @@ class Point(val x: Double, val y: Double) {
     math.sqrt(math.pow(this.x - other.x, 2) + math.pow(this.y - other.y, 2))
   }
 
+  override def toString: String = s"( $x, $y )"
+
 }
