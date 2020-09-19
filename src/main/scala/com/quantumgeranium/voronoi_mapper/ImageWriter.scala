@@ -1,5 +1,7 @@
 package com.quantumgeranium.voronoi_mapper
 
+import com.quantumgeranium.voronoi_mapper.util.Point
+
 import java.awt.{Color, Graphics2D}
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_RGB
@@ -13,9 +15,9 @@ class ImageWriter(var xDimension: Int, var yDimension: Int) {
   val image: BufferedImage = new BufferedImage(xDimension, yDimension, TYPE_INT_RGB)
   val graphics: Graphics2D = image.createGraphics()
 
-  def drawPoint(x: Int, y: Int, color: String = "black"): Unit = {
+  def drawPoint(p: Point, color: String = "black"): Unit = {
     setColor(color)
-    graphics.fillOval(x, y, 1, 1)
+    graphics.fillOval(p.x.toInt, p.y.toInt, 1, 1)
   }
 
   def writeImage(filename: String): Unit = {
