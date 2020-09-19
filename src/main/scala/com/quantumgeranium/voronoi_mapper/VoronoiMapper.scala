@@ -3,7 +3,11 @@ package com.quantumgeranium.voronoi_mapper
 object VoronoiMapper {
 
   def main(args: Array[String]): Unit = {
-    println("Hello")
+
+    val voronoiDiagram: VoronoiDiagram = new VoronoiDiagram
+
+    voronoiDiagram.writeDiagram("center_points.png")
+
   }
 
 }

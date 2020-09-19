@@ -14,10 +14,12 @@ class ImageWriter(var xDimension: Int, var yDimension: Int) {
 
   val image: BufferedImage = new BufferedImage(xDimension, yDimension, TYPE_INT_RGB)
   val graphics: Graphics2D = image.createGraphics()
+  graphics.setBackground(Color.WHITE)
+  graphics.clearRect(0, 0, xDimension, yDimension)
 
   def drawPoint(p: Point, color: String = "black"): Unit = {
     setColor(color)
-    graphics.fillOval(p.x.toInt, p.y.toInt, 1, 1)
+    graphics.fillOval(p.x.toInt, p.y.toInt, 4, 4)
   }
 
   def writeImage(filename: String): Unit = {
