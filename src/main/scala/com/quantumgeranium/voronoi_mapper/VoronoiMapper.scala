@@ -1,4 +1,4 @@
-package com.quantumgeranium.voronoi-mapper
+package com.quantumgeranium.voronoi_mapper
 
 object VoronoiMapper {
 
