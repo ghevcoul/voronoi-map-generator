@@ -1,2 +1,9 @@
 *.class
 *.log
+
+# Build files
+target/
+
+# IDE files
+.idea/
+.sdkmanrc
