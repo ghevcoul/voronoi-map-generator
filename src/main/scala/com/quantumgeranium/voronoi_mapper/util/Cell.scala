@@ -2,9 +2,8 @@ package com.quantumgeranium.voronoi_mapper.util
 
 import scala.collection.mutable.ArrayBuffer
 
-class Cell(val p: Point, val id: Int) {
+class Cell(val center: Point, val id: Int) {
 
-  val center: Point = p
   val edges: ArrayBuffer[Line] = new ArrayBuffer[Line]()
 
   def addEdge(edge: Line): Unit = edges += edge

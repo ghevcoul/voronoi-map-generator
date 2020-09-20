@@ -16,6 +16,9 @@ class VoronoiDiagram {
   val edges: ArrayBuffer[Line] = new ArrayBuffer[Line]()
   val cells: ArrayBuffer[Cell] = new ArrayBuffer[Cell]()
 
+  // Counter for the cell ID
+  var cellID = 0
+
   // Generate the Voronoi diagram, using the algorithm described at
   // https://courses.cs.washington.edu/courses/cse326/00wi/projects/voronoi.html
   def generate(): Unit = {
@@ -39,6 +42,19 @@ class VoronoiDiagram {
     points
   }
 
+  private def createCellForCenter(center: Point): Cell = {
+    val newCell = new Cell(center, cellID)
+
+    for (c <- cells) {
+      val connectingLine = new Line(center, c.center)
+      val bisector = connectingLine.perpendicularBisector()
+
+    }
+
+    cellID += 1
+    newCell
+  }
+
   // Create a set of dummy cells to bound the diagram
   private def createDummyCells(): Unit = {
     val c1 = new Cell(new Point(-xDimension, -yDimension), -1)
@@ -46,28 +62,24 @@ class VoronoiDiagram {
     c1.addEdge(new Line(new Point(xDimension / 2, -10 * yDimension), new Point(-10 * xDimension, yDimension / 2)))
     c1.addEdge(new Line(new Point(-10 * xDimension, yDimension / 2), new Point(xDimension / 2, yDimension / 2)))
     cells += c1
-    println(c1)
 
     val c2 = new Cell(new Point(2*xDimension, -yDimension), -2)
     c2.addEdge(new Line(new Point(xDimension / 2, yDimension / 2), new Point(xDimension / 2, -10 * yDimension)))
     c2.addEdge(new Line(new Point(xDimension / 2, -10 * yDimension), new Point(10 * xDimension, yDimension / 2)))
     c2.addEdge(new Line(new Point(10 * xDimension, yDimension / 2), new Point(xDimension / 2, yDimension / 2)))
     cells += c2
-    println(c2)
 
     val c3 = new Cell(new Point(2*xDimension, 2*yDimension), -3)
     c3.addEdge(new Line(new Point(xDimension / 2, yDimension / 2), new Point(xDimension / 2, 10 * yDimension)))
     c3.addEdge(new Line(new Point(xDimension / 2, 10 * yDimension), new Point(10 * xDimension, yDimension / 2)))
     c3.addEdge(new Line(new Point(10 * xDimension, yDimension / 2), new Point(xDimension / 2, yDimension / 2)))
     cells += c3
-    println(c3)
 
     val c4 = new Cell(new Point(-xDimension, 2*yDimension), -4)
     c4.addEdge(new Line(new Point(xDimension / 2, yDimension / 2), new Point(xDimension / 2, 10 * yDimension)))
     c4.addEdge(new Line(new Point(xDimension / 2, 10 * yDimension), new Point(-10 * xDimension, yDimension / 2)))
     c4.addEdge(new Line(new Point(-10 * xDimension, yDimension / 2), new Point(xDimension / 2, yDimension / 2)))
     cells += c4
-    println(c4)
   }
 
 }
