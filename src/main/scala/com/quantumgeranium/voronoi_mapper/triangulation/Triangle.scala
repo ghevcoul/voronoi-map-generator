@@ -4,11 +4,7 @@ import com.quantumgeranium.voronoi_mapper.util.Point
 import io.jvm.uuid.UUID
 import org.la4j.matrix.DenseMatrix
 
-class Triangle(
-                val vertex1: (UUID, Point),
-                val vertex2: (UUID, Point),
-                val vertex3: (UUID, Point)
-              ) {
+class Triangle(val vertex1: (UUID, Point), val vertex2: (UUID, Point), val vertex3: (UUID, Point)) {
 
   // For later triangle operations, the points need to be sorted in counterclockwise order
   private val sortedVertices = sortVertices()
@@ -34,6 +30,13 @@ class Triangle(
     )
     val matrix = DenseMatrix.from2DArray(Array[Array[Double]](row1, row2, row3))
     matrix.determinant() > 0
+  }
+
+  def isEdgeInThis(head: (UUID, Point), tail: (UUID, Point)): Boolean = {
+    val headShared = head._1 == vertA._1 || head._1 == vertB._1 || head._1 == vertC._1
+    val tailShared = tail._1 == vertA._1 || tail._1 == vertB._1 || tail._1 == vertC._1
+
+    headShared && tailShared
   }
 
   def circumcenter(): Point = {
