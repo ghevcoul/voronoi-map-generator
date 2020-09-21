@@ -13,6 +13,10 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
 
   val centers: mutable.Map[UUID, Point] = mutable.Map()
 
+  //TODO: After done adding points, remove superTriangle from data structures
+
+  //TODO: Convert to DualGraph representation
+
   def addPoint(newPoint: Point): Unit = {
     val pointID = UUID.random
     vertices += (pointID -> newPoint)
