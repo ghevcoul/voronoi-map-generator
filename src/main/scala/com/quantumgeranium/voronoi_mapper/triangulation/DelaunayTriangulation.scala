@@ -1,5 +1,6 @@
 package com.quantumgeranium.voronoi_mapper.triangulation
 
+import com.quantumgeranium.voronoi_mapper.ImageWriter
 import com.quantumgeranium.voronoi_mapper.util.Point
 import io.jvm.uuid._
 
@@ -20,7 +21,7 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
   def addPoint(newPoint: Point): Unit = {
     val pointID = UUID.random
     vertices += (pointID -> newPoint)
-    // Check if the new point is inside the circumcirle of any existing triangle
+    // Check if the new point is inside the circumcircle of any existing triangle
     val badTriangles = mutable.Set[Triangle]()
     triangles.foreach(t => {
       if (t.isPointInCircumcircle(newPoint)) {
@@ -49,14 +50,40 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
     })
     // Create new triangles connecting each edge in polygon to newPoint
     polygon.foreach(e => {
-      triangles += new Triangle((pointID, newPoint), (e._1, vertices(e._1)), (e._2, vertices(e._2)))
+      val triangle = new Triangle((pointID, newPoint), (e._1, vertices(e._1)), (e._2, vertices(e._2)))
+      triangles.addOne(triangle)
     })
   }
 
+  def drawTriangulation(filename: String): Unit = {
+    val writer = new ImageWriter(xDimension, yDimension)
+
+    // First draw all the triangles in grey
+    writer.setColor("grey")
+    writer.setLineWidth(3.0f)
+    triangles.foreach(t => {
+      writer.drawLine(t.vertex1._2, t.vertex2._2)
+      writer.drawLine(t.vertex2._2, t.vertex3._2)
+      writer.drawLine(t.vertex3._2, t.vertex1._2)
+    })
+    // Then draw the input points in black
+    writer.setColor("black")
+    vertices.foreach(v => {
+      writer.drawPoint(v._2, 9)
+    })
+
+    writer.writeImage(filename)
+  }
+
+  def printTriangulation(): Unit = {
+
+    triangles.foreach(t => println(s"\n$t"))
+  }
+
   private def addSuperTriangle(): Unit = {
-    val p1 = new Point(xDimension / 2, -10 * yDimension)
-    val p2 = new Point(-10 * xDimension, 10 * yDimension)
-    val p3 = new Point(10 * xDimension, 10 * yDimension)
+    val p1 = new Point(xDimension / 2, 5 * yDimension)
+    val p2 = new Point(-5 * xDimension, -5 * yDimension)
+    val p3 = new Point(5 * xDimension, -5 * yDimension)
     val supertriangle = new Triangle((UUID(0, 1), p1), (UUID(0, 2), p2), (UUID(0, 3), p3))
     triangles += supertriangle
     vertices += (UUID(0, 1) -> p1, UUID(0, 2) -> p2, UUID(0, 3) -> p3)

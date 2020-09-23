@@ -29,7 +29,8 @@ class Triangle(val vertex1: (UUID, Point), val vertex2: (UUID, Point), val verte
       math.pow(vertC._2.x - testPoint.x, 2) + math.pow(vertC._2.y - testPoint.y, 2)
     )
     val matrix = DenseMatrix.from2DArray(Array[Array[Double]](row1, row2, row3))
-    matrix.determinant() > 0
+    val determinant = matrix.determinant()
+    determinant > 0
   }
 
   def isEdgeInThis(head: (UUID, Point), tail: (UUID, Point)): Boolean = {
@@ -56,38 +57,21 @@ class Triangle(val vertex1: (UUID, Point), val vertex2: (UUID, Point), val verte
   }
 
   // Sort the input vertices in counterclockwise order
-  // Output is in the order top, lower-left, lower-right
+  // Use the method described at https://en.wikipedia.org/wiki/Curve_orientation#Orientation_of_a_simple_polygon
   private def sortVertices(): ((UUID, Point), (UUID, Point), (UUID, Point)) = {
-    var upper, lr, ll: (UUID, Point) = null
-    if (vertex1._2.x > vertex2._2.x && vertex1._2.x > vertex3._2.x) {
-      upper = vertex1
-      if (vertex2._2.y < vertex3._2.y) {
-        ll = vertex2
-        lr = vertex3
-      } else {
-        ll = vertex3
-        lr = vertex2
-      }
-    } else if (vertex2._2.x > vertex1._2.x && vertex2._2.x > vertex3._2.x) {
-      upper = vertex2
-      if (vertex1._2.y < vertex3._2.y) {
-        ll = vertex1
-        lr = vertex3
-      } else {
-        ll = vertex3
-        lr = vertex1
-      }
+    val row1 = Array[Double](1.0, vertex1._2.x, vertex1._2.y)
+    val row2 = Array[Double](1.0, vertex2._2.x, vertex2._2.y)
+    val row3 = Array[Double](1.0, vertex3._2.x, vertex3._2.y)
+    val matrix = DenseMatrix.from2DArray(Array[Array[Double]](row1, row2, row3))
+    // If the determinant is positive the points are already in counterclockwise order
+    if (matrix.determinant() > 0) {
+      (vertex1, vertex2, vertex3)
     } else {
-      upper = vertex3
-      if (vertex1._2.y < vertex2._2.y) {
-        ll = vertex1
-        lr = vertex2
-      } else {
-        ll = vertex2
-        lr = vertex1
-      }
+      // flip vertex1 and vertex3 to put them in order
+      (vertex3, vertex2, vertex1)
     }
-    (upper, ll, lr)
   }
+
+  override def toString: String = s"${vertA._2}  ${vertA._1}\n${vertB._2}  ${vertB._1}\n${vertC._2}  ${vertC._1}"
 
 }
