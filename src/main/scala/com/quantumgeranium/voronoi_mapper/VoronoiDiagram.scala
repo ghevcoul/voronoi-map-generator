@@ -13,7 +13,7 @@ class VoronoiDiagram {
   val yDimension: Int = 1000
 
   // Essential components of the Voronoi diagram
-  val centers: ArrayBuffer[Point] = initializeCenters(10)
+  val centers: ArrayBuffer[Point] = initializeCenters()
   val edges: ArrayBuffer[Line] = new ArrayBuffer[Line]()
   val cells: ArrayBuffer[Cell] = new ArrayBuffer[Cell]()
 
@@ -26,7 +26,7 @@ class VoronoiDiagram {
     centers.foreach(c => {
       delaunay.addPoint(c)
     })
-    
+
     delaunay.drawTriangulation("delaunay_triangulation.png")
   }
 

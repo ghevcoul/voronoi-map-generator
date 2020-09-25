@@ -8,25 +8,25 @@ class Triangle(val vertex1: (UUID, Point), val vertex2: (UUID, Point), val verte
 
   // For later triangle operations, the points need to be sorted in counterclockwise order
   private val sortedVertices = sortVertices()
-  private val vertA = sortedVertices._1
-  private val vertB = sortedVertices._2
-  private val vertC = sortedVertices._3
+  private val (idA, vertA) = sortedVertices._1
+  private val (idB, vertB) = sortedVertices._2
+  private val (idC, vertC) = sortedVertices._3
 
   def isPointInCircumcircle(testPoint: Point): Boolean = {
     val row1 = Array[Double](
-      vertA._2.x - testPoint.x,
-      vertA._2.y - testPoint.y,
-      math.pow(vertA._2.x - testPoint.x, 2) + math.pow(vertA._2.y - testPoint.y, 2)
+      vertA.x - testPoint.x,
+      vertA.y - testPoint.y,
+      math.pow(vertA.x - testPoint.x, 2) + math.pow(vertA.y - testPoint.y, 2)
     )
     val row2 = Array[Double](
-      vertB._2.x - testPoint.x,
-      vertB._2.y - testPoint.y,
-      math.pow(vertB._2.x - testPoint.x, 2) + math.pow(vertB._2.y - testPoint.y, 2)
+      vertB.x - testPoint.x,
+      vertB.y - testPoint.y,
+      math.pow(vertB.x - testPoint.x, 2) + math.pow(vertB.y - testPoint.y, 2)
     )
     val row3 = Array[Double](
-      vertC._2.x - testPoint.x,
-      vertC._2.y - testPoint.y,
-      math.pow(vertC._2.x - testPoint.x, 2) + math.pow(vertC._2.y - testPoint.y, 2)
+      vertC.x - testPoint.x,
+      vertC.y - testPoint.y,
+      math.pow(vertC.x - testPoint.x, 2) + math.pow(vertC.y - testPoint.y, 2)
     )
     val matrix = DenseMatrix.from2DArray(Array[Array[Double]](row1, row2, row3))
     val determinant = matrix.determinant()
@@ -34,24 +34,24 @@ class Triangle(val vertex1: (UUID, Point), val vertex2: (UUID, Point), val verte
   }
 
   def isEdgeInThis(head: (UUID, Point), tail: (UUID, Point)): Boolean = {
-    val headShared = head._1 == vertA._1 || head._1 == vertB._1 || head._1 == vertC._1
-    val tailShared = tail._1 == vertA._1 || tail._1 == vertB._1 || tail._1 == vertC._1
+    val headShared = head._1 == idA || head._1 == idB || head._1 == idC
+    val tailShared = tail._1 == idA || tail._1 == idB || tail._1 == idC
 
     headShared && tailShared
   }
 
   def circumcenter(): Point = {
-    val d = 2.0 * ((vertA._2.x * (vertB._2.y - vertC._2.y)) +
-                   (vertB._2.x * (vertC._2.y - vertA._2.y)) +
-                   (vertC._2.x * (vertA._2.y - vertB._2.y)))
+    val d = 2.0 * ((vertA.x * (vertB.y - vertC.y)) +
+                   (vertB.x * (vertC.y - vertA.y)) +
+                   (vertC.x * (vertA.y - vertB.y)))
 
-    val x = (((math.pow(vertA._2.x, 2) + math.pow(vertA._2.y, 2)) * (vertB._2.y - vertC._2.y)) +
-             ((math.pow(vertB._2.x, 2) + math.pow(vertB._2.y, 2)) * (vertC._2.y - vertA._2.y)) +
-             ((math.pow(vertC._2.x, 2) + math.pow(vertC._2.y, 2)) * (vertA._2.y - vertB._2.y))) / d
+    val x = (((math.pow(vertA.x, 2) + math.pow(vertA.y, 2)) * (vertB.y - vertC.y)) +
+             ((math.pow(vertB.x, 2) + math.pow(vertB.y, 2)) * (vertC.y - vertA.y)) +
+             ((math.pow(vertC.x, 2) + math.pow(vertC.y, 2)) * (vertA.y - vertB.y))) / d
 
-    val y = (((math.pow(vertA._2.x, 2) + math.pow(vertA._2.y, 2)) * (vertC._2.x - vertB._2.x)) +
-             ((math.pow(vertB._2.x, 2) + math.pow(vertB._2.y, 2)) * (vertA._2.x - vertC._2.x)) +
-             ((math.pow(vertC._2.x, 2) + math.pow(vertC._2.y, 2)) * (vertB._2.x - vertA._2.x))) / d
+    val y = (((math.pow(vertA.x, 2) + math.pow(vertA.y, 2)) * (vertC.x - vertB.x)) +
+             ((math.pow(vertB.x, 2) + math.pow(vertB.y, 2)) * (vertA.x - vertC.x)) +
+             ((math.pow(vertC.x, 2) + math.pow(vertC.y, 2)) * (vertB.x - vertA.x))) / d
 
     new Point(x, y)
   }
@@ -72,6 +72,6 @@ class Triangle(val vertex1: (UUID, Point), val vertex2: (UUID, Point), val verte
     }
   }
 
-  override def toString: String = s"${vertA._2}  ${vertA._1}\n${vertB._2}  ${vertB._1}\n${vertC._2}  ${vertC._1}"
+  override def toString: String = s"$vertA  $idA\n$vertB  $idB\n$vertC  $idC"
 
 }
