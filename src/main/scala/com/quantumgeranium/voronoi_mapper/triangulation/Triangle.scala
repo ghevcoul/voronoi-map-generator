@@ -4,13 +4,13 @@ import com.quantumgeranium.voronoi_mapper.util.Point
 import io.jvm.uuid.UUID
 import org.la4j.matrix.DenseMatrix
 
-class Triangle(val vertex1: (UUID, Point), val vertex2: (UUID, Point), val vertex3: (UUID, Point)) {
+class Triangle(private val vertex1: (UUID, Point), private val vertex2: (UUID, Point), private val vertex3: (UUID, Point)) {
 
   // For later triangle operations, the points need to be sorted in counterclockwise order
   private val sortedVertices = sortVertices()
-  private val (idA, vertA) = sortedVertices._1
-  private val (idB, vertB) = sortedVertices._2
-  private val (idC, vertC) = sortedVertices._3
+  val (idA, vertA) = sortedVertices._1
+  val (idB, vertB) = sortedVertices._2
+  val (idC, vertC) = sortedVertices._3
 
   def isPointInCircumcircle(testPoint: Point): Boolean = {
     val row1 = Array[Double](
@@ -33,9 +33,9 @@ class Triangle(val vertex1: (UUID, Point), val vertex2: (UUID, Point), val verte
     determinant > 0
   }
 
-  def isEdgeInThis(head: (UUID, Point), tail: (UUID, Point)): Boolean = {
-    val headShared = head._1 == idA || head._1 == idB || head._1 == idC
-    val tailShared = tail._1 == idA || tail._1 == idB || tail._1 == idC
+  def isEdgeInThis(headID: UUID, tailID: UUID): Boolean = {
+    val headShared = headID == idA || headID == idB || headID == idC
+    val tailShared = tailID == idA || tailID == idB || tailID == idC
 
     headShared && tailShared
   }

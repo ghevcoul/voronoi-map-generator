@@ -32,14 +32,14 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
     // represented by the pair of UUIDs for the edge's vertices
     val polygon = mutable.Set[(UUID, UUID)]()
     badTriangles.foreach(t => {
-      for (e <- List((t.vertex1, t.vertex2), (t.vertex2, t.vertex3), (t.vertex3, t.vertex1))) {
+      for (e <- List((t.idA, t.idB), (t.idB, t.idC), (t.idC, t.idA))) {
         var edgeShared = false // Start by assuming the edge is not shared
         // check all other triangles in badTriangles except this one
         badTriangles.diff(Set[Triangle](t)).foreach(other => {
           if (other.isEdgeInThis(e._1, e._2)) edgeShared = true
         })
         if (!edgeShared) {
-          polygon.add((e._1._1, e._2._1))
+          polygon.add(e)
         }
       }
     })
@@ -62,9 +62,9 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
     writer.setColor("grey")
     writer.setLineWidth(3.0f)
     triangles.foreach(t => {
-      writer.drawLine(t.vertex1._2, t.vertex2._2)
-      writer.drawLine(t.vertex2._2, t.vertex3._2)
-      writer.drawLine(t.vertex3._2, t.vertex1._2)
+      writer.drawLine(t.vertA, t.vertB)
+      writer.drawLine(t.vertB, t.vertC)
+      writer.drawLine(t.vertC, t.vertA)
     })
     // Then draw the input points in black
     writer.setColor("black")
