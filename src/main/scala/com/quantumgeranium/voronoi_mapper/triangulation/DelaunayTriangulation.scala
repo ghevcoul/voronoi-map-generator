@@ -55,12 +55,8 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
     val dg = new DualGraph
 
     // Convert the list of triangle vertices in to CellNodes
-    // Excluding the vertices of the supertriangle starting point
-    val superTriangleIDs = List(UUID(0, 1), UUID(0, 2), UUID(0, 3))
     for ((id, pos) <- vertices) {
-      if (!superTriangleIDs.contains(id)) {
-        dg.addCellNode(new CellNode(id, pos))
-      }
+      dg.addCellNode(new CellNode(id, pos))
     }
 
     // The circumcenter of a triangle will be one of the two VertexNodes associated with each edge of the triangle
@@ -69,8 +65,7 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
     // Then once we've determined the full associations, iterate over the Map and construct the Graph edges
     val cellVertexMap: mutable.Map[immutable.SortedSet[UUID], mutable.Set[UUID]] = mutable.Map()
     triangles.foreach(t => {
-      //TODO: Identify triangles containing "supertriangle" vertices and adjust the circumcenters to the boundary
-      val circumcenter = movePointInsideBoundary(t.circumcenter())
+      val circumcenter = t.circumcenter()
       val circumID = UUID.random
 
       dg.addVertexNode(new VertexNode(circumID, circumcenter))
@@ -85,17 +80,20 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
 
     for ((cells, vertexes) <- cellVertexMap) {
       assert(vertexes.size <= 2, "Found cell pair with more than 2 vertices")
-      // If one of the cell nodes is part of the supertriangle, we want to move the "outer" vertex to the wall of the graph
-      val cellA = dg.cells.getOrElse(cells.head, new CellNode())
-      val cellB = dg.cells.getOrElse(cells.tail.head, new CellNode())
-      val vertA = dg.vertices(vertexes.head)
-      val vertB = dg.vertices(vertexes.tail.head)
-      val edge = new Edge(UUID.random, cellA, cellB, vertA, vertB)
-      cellA.addEdge(edge)
-      cellB.addEdge(edge)
-      vertA.addEdge(edge)
-      vertB.addEdge(edge)
-      dg.addEdge(edge)
+      // Skip edges where both cells were in the starting supertriangle
+      val superTriangleIDs = List(UUID(0, 1), UUID(0, 2), UUID(0, 3))
+      if (!superTriangleIDs.contains(cells.head) && !superTriangleIDs.contains(cells.tail.head)) {
+        val cellA = dg.cells.getOrElse(cells.head, new CellNode())
+        val cellB = dg.cells.getOrElse(cells.tail.head, new CellNode())
+        val vertA = dg.vertices(vertexes.head)
+        val vertB = dg.vertices(vertexes.tail.head)
+        val edge = new Edge(UUID.random, cellA, cellB, vertA, vertB)
+        cellA.addEdge(edge)
+        cellB.addEdge(edge)
+        vertA.addEdge(edge)
+        vertB.addEdge(edge)
+        dg.addEdge(edge)
+      }
     }
 
     dg
@@ -131,7 +129,9 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
     val p3 = new Point(5 * xDimension, -5 * yDimension)
     val supertriangle = new Triangle((UUID(0, 1), p1), (UUID(0, 2), p2), (UUID(0, 3), p3))
     triangles += supertriangle
-    vertices += (UUID(0, 1) -> p1, UUID(0, 2) -> p2, UUID(0, 3) -> p3)
+    vertices.addOne(UUID(0, 1) -> p1)
+    vertices.addOne(UUID(0, 2) -> p2)
+    vertices.addOne(UUID(0, 3) -> p3)
   }
 
   // If the input point is outside the boundary, projects it to the nearest wall
@@ -146,7 +146,10 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
     if (p.x > xDimension) newX = xDimension.toDouble
     if (p.y < 0) newY = 0.0
     if (p.y > yDimension) newY = yDimension.toDouble
-    new Point(newX, newY)
+
+    val newP = new Point(newX, newY)
+    println(s"Got point at $p, moved to $newP")
+    newP
   }
 
 }
