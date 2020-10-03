@@ -1,22 +1,18 @@
 package com.quantumgeranium.voronoi_mapper.triangulation
 
 import com.quantumgeranium.voronoi_mapper.ImageWriter
+import com.quantumgeranium.voronoi_mapper.graph.{CellNode, DualGraph, Edge, VertexNode}
 import com.quantumgeranium.voronoi_mapper.util.Point
 import io.jvm.uuid._
 
 import scala.collection.mutable
+import scala.collection.immutable
 
 class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
 
   val vertices: mutable.Map[UUID, Point] = mutable.Map()
   val triangles: mutable.ArrayBuffer[Triangle] = mutable.ArrayBuffer[Triangle]()
   addSuperTriangle()
-
-  val centers: mutable.Map[UUID, Point] = mutable.Map()
-
-  //TODO: After done adding points, remove superTriangle from data structures
-
-  //TODO: Convert to DualGraph representation
 
   def addPoint(newPoint: Point): Unit = {
     val pointID = UUID.random
@@ -55,6 +51,56 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
     })
   }
 
+  def convertToDualGraph(): DualGraph = {
+    val dg = new DualGraph
+
+    // Convert the list of triangle vertices in to CellNodes
+    // Excluding the vertices of the supertriangle starting point
+    val superTriangleIDs = List(UUID(0, 1), UUID(0, 2), UUID(0, 3))
+    for ((id, pos) <- vertices) {
+      if (!superTriangleIDs.contains(id)) {
+        dg.addCellNode(new CellNode(id, pos))
+      }
+    }
+
+    // The circumcenter of a triangle will be one of the two VertexNodes associated with each edge of the triangle
+    // Loop through all the triangles creating Nodes for the Cells and Vertices
+    // At the same time, build an intermediate Map that will hold List(cellID, cellID) -> List(vertexID, vertexID) associations
+    // Then once we've determined the full associations, iterate over the Map and construct the Graph edges
+    val cellVertexMap: mutable.Map[immutable.SortedSet[UUID], mutable.Set[UUID]] = mutable.Map()
+    triangles.foreach(t => {
+      //TODO: Identify triangles containing "supertriangle" vertices and adjust the circumcenters to the boundary
+      val circumcenter = movePointInsideBoundary(t.circumcenter())
+      val circumID = UUID.random
+
+      dg.addVertexNode(new VertexNode(circumID, circumcenter))
+
+      val abSet = immutable.SortedSet[UUID](t.idA, t.idB)
+      cellVertexMap.addOne(abSet -> cellVertexMap.getOrElse(abSet, mutable.Set[UUID]()).addOne(circumID))
+      val bcSet = immutable.SortedSet[UUID](t.idB, t.idC)
+      cellVertexMap.addOne(bcSet -> cellVertexMap.getOrElse(bcSet, mutable.Set[UUID]()).addOne(circumID))
+      val caSet = immutable.SortedSet[UUID](t.idC, t.idA)
+      cellVertexMap.addOne(caSet -> cellVertexMap.getOrElse(caSet, mutable.Set[UUID]()).addOne(circumID))
+    })
+
+    for ((cells, vertexes) <- cellVertexMap) {
+      assert(vertexes.size <= 2, "Found cell pair with more than 2 vertices")
+      // If one of the cell nodes is part of the supertriangle, we want to move the "outer" vertex to the wall of the graph
+      val cellA = dg.cells.getOrElse(cells.head, new CellNode())
+      val cellB = dg.cells.getOrElse(cells.tail.head, new CellNode())
+      val vertA = dg.vertices(vertexes.head)
+      val vertB = dg.vertices(vertexes.tail.head)
+      val edge = new Edge(UUID.random, cellA, cellB, vertA, vertB)
+      cellA.addEdge(edge)
+      cellB.addEdge(edge)
+      vertA.addEdge(edge)
+      vertB.addEdge(edge)
+      dg.addEdge(edge)
+    }
+
+    dg
+  }
+
   def drawTriangulation(filename: String): Unit = {
     val writer = new ImageWriter(xDimension, yDimension)
 
@@ -76,7 +122,6 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
   }
 
   def printTriangulation(): Unit = {
-
     triangles.foreach(t => println(s"\n$t"))
   }
 
@@ -87,6 +132,21 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
     val supertriangle = new Triangle((UUID(0, 1), p1), (UUID(0, 2), p2), (UUID(0, 3), p3))
     triangles += supertriangle
     vertices += (UUID(0, 1) -> p1, UUID(0, 2) -> p2, UUID(0, 3) -> p3)
+  }
+
+  // If the input point is outside the boundary, projects it to the nearest wall
+  // If the input point is already inside the boundary, returns the same point
+  private def movePointInsideBoundary(p: Point): Point = {
+    if (0 <= p.x && p.x <= xDimension && 0 <= p.y && p.y <= yDimension) {
+      return p
+    }
+    var newX = p.x
+    var newY = p.y
+    if (p.x < 0) newX = 0.0
+    if (p.x > xDimension) newX = xDimension.toDouble
+    if (p.y < 0) newY = 0.0
+    if (p.y > yDimension) newY = yDimension.toDouble
+    new Point(newX, newY)
   }
 
 }

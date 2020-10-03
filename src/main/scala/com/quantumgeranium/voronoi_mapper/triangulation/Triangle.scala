@@ -40,6 +40,10 @@ class Triangle(private val vertex1: (UUID, Point), private val vertex2: (UUID, P
     headShared && tailShared
   }
 
+  def isPointInThis(queryID: UUID): Boolean = {
+    queryID == idA || queryID == idB || queryID == idC
+  }
+
   def circumcenter(): Point = {
     val d = 2.0 * ((vertA.x * (vertB.y - vertC.y)) +
                    (vertB.x * (vertC.y - vertA.y)) +

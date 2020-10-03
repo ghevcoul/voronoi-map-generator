@@ -4,8 +4,6 @@ import com.quantumgeranium.voronoi_mapper.util.Point
 
 import io.jvm.uuid._
 
-class CellNode(id: UUID, position: Point) extends Node(id, position) {
-
-
+class CellNode(id: UUID = UUID(0, 1), position: Point = new Point(-1.0, -1.0)) extends Node(id, position) {
 
 }
