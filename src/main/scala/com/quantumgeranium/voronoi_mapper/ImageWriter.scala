@@ -39,6 +39,7 @@ class ImageWriter(var xDimension: Int, var yDimension: Int) {
       case "black" => graphics.setColor(Color.BLACK)
       case "blue" => graphics.setColor(Color.BLUE)
       case "green" => graphics.setColor(Color.GREEN)
+      case "red" => graphics.setColor(Color.RED)
       case "gray" => graphics.setColor(Color.GRAY)
       case "grey" => graphics.setColor(Color.GRAY)
       case _ => throw new NotImplementedError(s"Unknown color $color")

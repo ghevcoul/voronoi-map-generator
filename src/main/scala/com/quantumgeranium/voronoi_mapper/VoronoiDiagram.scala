@@ -1,7 +1,7 @@
 package com.quantumgeranium.voronoi_mapper
 
 import com.quantumgeranium.voronoi_mapper.triangulation.DelaunayTriangulation
-import com.quantumgeranium.voronoi_mapper.util.{Cell, Line, Point}
+import com.quantumgeranium.voronoi_mapper.util.Point
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
@@ -14,11 +14,6 @@ class VoronoiDiagram {
 
   // Essential components of the Voronoi diagram
   val centers: ArrayBuffer[Point] = initializeCenters()
-  val edges: ArrayBuffer[Line] = new ArrayBuffer[Line]()
-  val cells: ArrayBuffer[Cell] = new ArrayBuffer[Cell]()
-
-  // Counter for the cell ID
-  var cellID = 0
 
   // Generate the Voronoi diagram, using the Delaunay triangulation method
   def generate(): Unit = {
@@ -26,25 +21,22 @@ class VoronoiDiagram {
     centers.foreach(c => {
       delaunay.addPoint(c)
     })
-
     delaunay.drawTriangulation("delaunay_triangulation.png")
-  }
 
-  def writeDiagram(filename: String): Unit = {
-    val writer: ImageWriter = new ImageWriter(xDimension, yDimension)
-
-    // Draw the center points of each cell
-    writer.setColor("black")
-    centers.foreach(c => writer.drawPoint(c))
-
-    writer.writeImage(filename)
+    val graph = delaunay.convertToDualGraph()
+    graph.drawGraph(xDimension, yDimension)
   }
 
   private def initializeCenters(numPoints: Int = 100): ArrayBuffer[Point] = {
+    val writer = new ImageWriter(xDimension, yDimension)
+    writer.setColor("black")
     val points = new ArrayBuffer[Point]()
     for (_ <- 0 until numPoints) {
-      points += new Point(random.nextDouble() * xDimension, random.nextDouble() * yDimension)
+      val p = new Point(random.nextDouble() * xDimension, random.nextDouble() * yDimension)
+      writer.drawPoint(p)
+      points.addOne(p)
     }
+    writer.writeImage("center_points.png")
     points
   }
 
