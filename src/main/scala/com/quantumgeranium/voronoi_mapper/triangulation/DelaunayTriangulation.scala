@@ -134,22 +134,4 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
     vertices.addOne(UUID(0, 3) -> p3)
   }
 
-  // If the input point is outside the boundary, projects it to the nearest wall
-  // If the input point is already inside the boundary, returns the same point
-  private def movePointInsideBoundary(p: Point): Point = {
-    if (0 <= p.x && p.x <= xDimension && 0 <= p.y && p.y <= yDimension) {
-      return p
-    }
-    var newX = p.x
-    var newY = p.y
-    if (p.x < 0) newX = 0.0
-    if (p.x > xDimension) newX = xDimension.toDouble
-    if (p.y < 0) newY = 0.0
-    if (p.y > yDimension) newY = yDimension.toDouble
-
-    val newP = new Point(newX, newY)
-    println(s"Got point at $p, moved to $newP")
-    newP
-  }
-
 }
