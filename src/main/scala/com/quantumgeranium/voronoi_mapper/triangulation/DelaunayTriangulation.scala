@@ -83,8 +83,8 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
       // Skip edges where both cells were in the starting supertriangle
       val superTriangleIDs = List(UUID(0, 1), UUID(0, 2), UUID(0, 3))
       if (!superTriangleIDs.contains(cells.head) && !superTriangleIDs.contains(cells.tail.head)) {
-        val cellA = dg.cells.getOrElse(cells.head, new CellNode())
-        val cellB = dg.cells.getOrElse(cells.tail.head, new CellNode())
+        val cellA = dg.cells(cells.head)
+        val cellB = dg.cells(cells.tail.head)
         val vertA = dg.vertices(vertexes.head)
         val vertB = dg.vertices(vertexes.tail.head)
         val edge = new Edge(UUID.random, cellA, cellB, vertA, vertB)
