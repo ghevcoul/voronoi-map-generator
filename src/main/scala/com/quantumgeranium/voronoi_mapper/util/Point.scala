@@ -10,6 +10,6 @@ class Point(val x: Double, val y: Double) {
     xMin <= x && x <= xMax && yMin <= y && y <= yMax
   }
 
-  override def toString: String = s"( $x, $y )"
+  override def toString: String = f"( $x%2.2f, $y%2.2f )"
 
 }
