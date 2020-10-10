@@ -1,4 +1,4 @@
-package com.quantumgeranium.voronoi_mapper.util
+package com.quantumgeranium.voronoi_mapper.geom
 
 class Point(val x: Double, val y: Double) {
 

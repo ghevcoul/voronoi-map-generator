@@ -1,4 +1,4 @@
-package com.quantumgeranium.voronoi_mapper.util
+package com.quantumgeranium.voronoi_mapper.geom
 
 class Line(val head: Point, val tail: Point) {
 
