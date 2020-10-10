@@ -2,7 +2,7 @@ package com.quantumgeranium.voronoi_mapper.triangulation
 
 import com.quantumgeranium.voronoi_mapper.ImageWriter
 import com.quantumgeranium.voronoi_mapper.graph.{CellNode, DualGraph, Edge, VertexNode}
-import com.quantumgeranium.voronoi_mapper.util.Point
+import com.quantumgeranium.voronoi_mapper.geom.Point
 import io.jvm.uuid._
 
 import scala.collection.mutable

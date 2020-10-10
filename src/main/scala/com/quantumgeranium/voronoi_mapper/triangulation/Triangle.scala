@@ -1,6 +1,6 @@
 package com.quantumgeranium.voronoi_mapper.triangulation
 
-import com.quantumgeranium.voronoi_mapper.util.Point
+import com.quantumgeranium.voronoi_mapper.geom.Point
 import io.jvm.uuid.UUID
 import org.la4j.matrix.DenseMatrix
 

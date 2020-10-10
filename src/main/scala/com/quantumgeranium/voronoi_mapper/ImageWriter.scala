@@ -1,6 +1,6 @@
 package com.quantumgeranium.voronoi_mapper
 
-import com.quantumgeranium.voronoi_mapper.util.Point
+import com.quantumgeranium.voronoi_mapper.geom.Point
 import java.awt.{BasicStroke, Color, Graphics2D}
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_RGB

@@ -1,7 +1,7 @@
 package com.quantumgeranium.voronoi_mapper
 
 import com.quantumgeranium.voronoi_mapper.triangulation.DelaunayTriangulation
-import com.quantumgeranium.voronoi_mapper.util.Point
+import com.quantumgeranium.voronoi_mapper.geom.Point
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
@@ -12,7 +12,7 @@ object VoronoiMapper {
   val yDimension = 1000
   val numPoints = 100
 
-  val random = new Random()
+  val random = new Random(95709)
 
   def initializeCenters(): ArrayBuffer[Point] = {
     val writer = new ImageWriter(xDimension, yDimension)
@@ -38,6 +38,7 @@ object VoronoiMapper {
     delaunay.drawTriangulation("delaunay_triangulation.png")
 
     val graph = delaunay.convertToDualGraph()
+    graph.clipToBoundingBox(0, xDimension, 0, yDimension)
     graph.drawGraph(xDimension, yDimension)
   }
 
