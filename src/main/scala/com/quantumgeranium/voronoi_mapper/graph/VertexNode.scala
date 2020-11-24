@@ -5,7 +5,7 @@ import io.jvm.uuid._
 
 import scala.collection.mutable.ArrayBuffer
 
-class VertexNode(val id: UUID, val position: Point) {
+class VertexNode(val id: UUID, var position: Point) {
 
   private val edges: ArrayBuffer[Edge] = new ArrayBuffer[Edge]()
 
@@ -25,6 +25,10 @@ class VertexNode(val id: UUID, val position: Point) {
 
   def getEdges(): ArrayBuffer[Edge] = {
     edges
+  }
+
+  def move(newPos: Point): Unit = {
+    position = newPos
   }
 
 }

@@ -8,6 +8,7 @@ class Triangle(private val vertex1: (UUID, Point), private val vertex2: (UUID, P
 
   // For later triangle operations, the points need to be sorted in counterclockwise order
   private val sortedVertices = sortVertices()
+  val id: UUID = UUID.random
   val (idA, vertA) = sortedVertices._1
   val (idB, vertB) = sortedVertices._2
   val (idC, vertC) = sortedVertices._3
