@@ -21,6 +21,6 @@ class Line(val head: Point, val tail: Point) {
     new Point((head.x + tail.x) / 2.0, (head.y + tail.y) / 2.0)
   }
 
-  override def toString: String = s"[ $head, $tail ]"
+  override def toString: String = s"[$head, $tail]"
 
 }
