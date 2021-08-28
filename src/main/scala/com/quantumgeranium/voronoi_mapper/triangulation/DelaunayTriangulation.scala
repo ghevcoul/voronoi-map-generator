@@ -2,7 +2,7 @@ package com.quantumgeranium.voronoi_mapper.triangulation
 
 import com.quantumgeranium.voronoi_mapper.ImageWriter
 import com.quantumgeranium.voronoi_mapper.graph.{CellNode, DualGraph, Edge, VertexNode}
-import com.quantumgeranium.voronoi_mapper.geom.Point
+import com.quantumgeranium.voronoi_mapper.geom.{Geometry, Line, Point}
 import io.jvm.uuid._
 
 import scala.collection.mutable
@@ -51,50 +51,59 @@ class DelaunayTriangulation(val xDimension: Int, val yDimension: Int) {
     })
   }
 
+  // The circumcenter of a triangle will be one of the two VertexNodes associated with each edge of the triangle
+  // Loop through all the triangles creating Nodes for the Cells and Vertices
+  // At the same time, build an intermediate Map that will hold List(cellID, cellID) -> List(vertexID, vertexID) associations
+  // Then once we've determined the full associations, iterate over the Map and construct the Graph edges
   def convertToDualGraph(): DualGraph = {
     val dg = new DualGraph
+    val cellNodes: mutable.Map[UUID, CellNode] = mutable.Map()
+    val vertexNodes: mutable.Map[UUID, VertexNode] = mutable.Map()
+    val edges: mutable.Map[UUID, Edge] = mutable.Map()
+    val superTriangleIDs = List(UUID(0, 1), UUID(0, 2), UUID(0, 3))
+    val boundingBox = Geometry.createBox(0, xDimension, 0, yDimension)
 
-    // Convert the list of triangle vertices in to CellNodes
+    // Convert the list of triangle vertices to CellNodes
     for ((id, pos) <- vertices) {
-      dg.addCellNode(new CellNode(id, pos))
+      cellNodes.addOne(id -> new CellNode(id, pos))
     }
 
-    // The circumcenter of a triangle will be one of the two VertexNodes associated with each edge of the triangle
-    // Loop through all the triangles creating Nodes for the Cells and Vertices
-    // At the same time, build an intermediate Map that will hold List(cellID, cellID) -> List(vertexID, vertexID) associations
-    // Then once we've determined the full associations, iterate over the Map and construct the Graph edges
-    val cellVertexMap: mutable.Map[immutable.SortedSet[UUID], mutable.Set[UUID]] = mutable.Map()
+    // Identify the triangles shared by each pair of CellNodes
+    val edgeTriangleMap: mutable.Map[immutable.SortedSet[UUID], mutable.Set[Triangle]] = mutable.Map()
     triangles.foreach(t => {
-      val circumcenter = t.circumcenter()
-      val circumID = UUID.random
-
-      dg.addVertexNode(new VertexNode(circumID, circumcenter))
-
       val abSet = immutable.SortedSet[UUID](t.idA, t.idB)
-      cellVertexMap.addOne(abSet -> cellVertexMap.getOrElse(abSet, mutable.Set[UUID]()).addOne(circumID))
+      edgeTriangleMap.addOne(abSet -> edgeTriangleMap.getOrElse(abSet, mutable.Set[Triangle]()).addOne(t))
       val bcSet = immutable.SortedSet[UUID](t.idB, t.idC)
-      cellVertexMap.addOne(bcSet -> cellVertexMap.getOrElse(bcSet, mutable.Set[UUID]()).addOne(circumID))
+      edgeTriangleMap.addOne(bcSet -> edgeTriangleMap.getOrElse(bcSet, mutable.Set[Triangle]()).addOne(t))
       val caSet = immutable.SortedSet[UUID](t.idC, t.idA)
-      cellVertexMap.addOne(caSet -> cellVertexMap.getOrElse(caSet, mutable.Set[UUID]()).addOne(circumID))
+      edgeTriangleMap.addOne(caSet -> edgeTriangleMap.getOrElse(caSet, mutable.Set[Triangle]()).addOne(t))
     })
 
-    for ((cells, vertexes) <- cellVertexMap) {
-      assert(vertexes.size <= 2, "Found cell pair with more than 2 vertices")
-      // Skip edges where both cells were in the starting supertriangle
-      val superTriangleIDs = List(UUID(0, 1), UUID(0, 2), UUID(0, 3))
-      if (!superTriangleIDs.contains(cells.head) && !superTriangleIDs.contains(cells.tail.head)) {
-        val cellA = dg.cells(cells.head)
-        val cellB = dg.cells(cells.tail.head)
-        val vertA = dg.vertices(vertexes.head)
-        val vertB = dg.vertices(vertexes.tail.head)
-        val edge = new Edge(UUID.random, cellA, cellB, vertA, vertB)
+    // Create VertexNodes and an Edge connecting the set of CellNodes and VertexNodes
+    for ((cells, vertexTriangles) <- edgeTriangleMap) {
+      if (vertexTriangles.size == 2) {
+        val cellA = cellNodes(cells.head)
+        val cellB = cellNodes(cells.tail.head)
+        val triangleA = vertexTriangles.head
+        val vertexA = new VertexNode(triangleA.id, triangleA.circumcenter())
+        vertexNodes.addOne(vertexA.id -> vertexA)
+        val triangleB = vertexTriangles.tail.head
+        val vertexB = new VertexNode(triangleB.id, triangleB.circumcenter())
+        vertexNodes.addOne(vertexB.id -> vertexB)
+
+        val edge = new Edge(UUID.random, cellA, Some(cellB), vertexA, vertexB)
         cellA.addEdge(edge)
         cellB.addEdge(edge)
-        vertA.addEdge(edge)
-        vertB.addEdge(edge)
-        dg.addEdge(edge)
+        vertexA.addEdge(edge)
+        vertexB.addEdge(edge)
+        edges.addOne(edge.id -> edge)
       }
     }
+
+    // Now insert all the Cells, Vertexes, and Edges into the Graph
+    cellNodes.foreach{ case (id, node) => dg.addCellNode(node) }
+    vertexNodes.foreach{ case (id, node) => dg.addVertexNode(node) }
+    edges.foreach{ case (id, edge) => dg.addEdge(edge) }
 
     dg
   }

@@ -10,7 +10,7 @@ object VoronoiMapper {
 
   val xDimension = 1000
   val yDimension = 1000
-  val numPoints = 100
+  val numPoints = 250
 
   val random = new Random(95709)
 
@@ -38,7 +38,6 @@ object VoronoiMapper {
     delaunay.drawTriangulation("delaunay_triangulation.png")
 
     val graph = delaunay.convertToDualGraph()
-    graph.clipToBoundingBox(0, xDimension, 0, yDimension)
     graph.drawGraph(xDimension, yDimension)
   }
 
