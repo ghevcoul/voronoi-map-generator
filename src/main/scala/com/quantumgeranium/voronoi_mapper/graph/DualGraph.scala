@@ -21,7 +21,7 @@ class DualGraph {
     cells.foreach{ case (id, node) => node.computeProperties() }
   }
 
-  def drawGraph(xDim: Int, yDim: Int): Unit = {
+  def drawStartingGraph(xDim: Int, yDim: Int): Unit = {
     val writer = new ImageWriter(xDim, yDim)
 
     // Draw the cells
@@ -33,7 +33,6 @@ class DualGraph {
       }
       writer.setColor("red")
       writer.drawPoint(c.position)
-
     }
 
     // Draw all the edges
