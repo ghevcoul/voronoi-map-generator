@@ -1,7 +1,7 @@
 package com.quantumgeranium.voronoi_mapper
 
 import com.quantumgeranium.voronoi_mapper.geom.Point
-import java.awt.{BasicStroke, Color, Graphics2D}
+import java.awt.{BasicStroke, Color, Graphics2D, Polygon}
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_RGB
 import java.io.File
@@ -27,6 +27,12 @@ class ImageWriter(var xDimension: Int, var yDimension: Int) {
 
   def drawLine(v1: Point, v2: Point): Unit = {
     graphics.drawLine(v1.x.toInt, v1.y.toInt, v2.x.toInt, v2.y.toInt)
+  }
+
+  def drawPolygon(points: List[Point]): Unit = {
+    val polygon = new Polygon()
+    points.foreach(p => polygon.addPoint(p.x.toInt, p.y.toInt))
+    graphics.fillPolygon(polygon)
   }
 
   def writeImage(filename: String): Unit = {
