@@ -8,6 +8,14 @@ class Edge(val id: UUID,
            val vertexA: VertexNode,
            val vertexB: VertexNode) {
 
+  val vertexNodes = List(vertexA, vertexB)
+  val cellNodes = createCellNodeList
 
+  private def createCellNodeList: List[CellNode] = {
+    cellB match {
+      case Some(nodeB) => List(cellA, nodeB)
+      case None => List(cellA)
+    }
+  }
 
 }
