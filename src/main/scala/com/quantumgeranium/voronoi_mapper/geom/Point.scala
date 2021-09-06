@@ -6,8 +6,8 @@ class Point(val x: Double, val y: Double) {
     math.sqrt(math.pow(this.x - other.x, 2) + math.pow(this.y - other.y, 2))
   }
 
-  def inBoundingBox(xMin: Int, xMax: Int, yMin: Int, yMax: Int): Boolean = {
-    xMin <= x && x <= xMax && yMin <= y && y <= yMax
+  def inBoundingBox(bBox: BoundingBox): Boolean = {
+    bBox.xMin <= x && x <= bBox.xMax && bBox.yMin <= y && y <= bBox.yMax
   }
 
   override def toString: String = f"($x%5.2f, $y%5.2f)"
