@@ -2,6 +2,22 @@ package com.quantumgeranium.voronoi_mapper.geom
 
 object Geometry {
 
+  // Get the centre point of a list of points
+  def computeCenterPoint(points: List[Point]): Point = {
+    var xSum = 0.0
+    var ySum = 0.0
+
+    points.foreach(p => {
+      xSum += p.x
+      ySum += p.y
+    })
+
+    xSum /= points.length
+    ySum /= points.length
+
+    new Point(xSum, ySum)
+  }
+
   // Cross product of two points
   def crossProduct(a: Point, b: Point): Double = {
     (a.x * b.y) - (a.y * b.x)
