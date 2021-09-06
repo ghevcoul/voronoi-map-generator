@@ -23,12 +23,25 @@ class VertexNode(val id: UUID, var position: Point) {
     edges.remove(pos)
   }
 
-  def getEdges(): ArrayBuffer[Edge] = {
-    edges
-  }
+  def getEdges: ArrayBuffer[Edge] = edges
 
   def move(newPos: Point): Unit = {
     position = newPos
   }
+
+  // Comparison functions to determine if this node is the same as another node
+
+  // Can these objects even be compared?
+  def canEqual(other: Any): Boolean = other.isInstanceOf[VertexNode]
+
+  // Are these objects equal?
+  override def equals(other: Any): Boolean = {
+    other match {
+      case other: VertexNode => canEqual(other) && id == other.id
+      case _ => false
+    }
+  }
+
+  override def hashCode(): Int = id.hashCode()
 
 }
