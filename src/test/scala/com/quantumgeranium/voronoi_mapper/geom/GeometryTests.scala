@@ -7,6 +7,7 @@ class GeometryTests extends BaseTestSpec with PrivateMethodTester {
 
   private val doBoundingBoxesIntersect = PrivateMethod[Boolean](Symbol("doBoundingBoxesIntersect"))
   private val isPointOnLine = PrivateMethod[Boolean](Symbol("isPointOnLine"))
+  private val isPointRightOfLine = PrivateMethod[Boolean](Symbol("isPointRightOfLine"))
 
   "doBoundingBoxesIntersect" should "return false when the lines are parallel along an axis" in {
     val lineA = new Line(new Point(0, 0), new Point(0, 5))
@@ -77,6 +78,70 @@ class GeometryTests extends BaseTestSpec with PrivateMethodTester {
     val point = new Point(2.5, 1)
 
     val result = Geometry invokePrivate isPointOnLine(line, point)
+    result shouldBe false
+  }
+
+  "isPointRightOfLine" should "return true when point is right of x-axis aligned line" in {
+    val line = new Line(new Point(0, 0), new Point(5, 0))
+    val point = new Point(2, -1)
+
+    val result = Geometry invokePrivate isPointRightOfLine(line, point)
+    result shouldBe true
+  }
+
+  it should "return false when point is left of x-axis aligned line" in {
+    val line = new Line(new Point(0, 0), new Point(5, 0))
+    val point = new Point(2, 1)
+
+    val result = Geometry invokePrivate isPointRightOfLine(line, point)
+    result shouldBe false
+  }
+
+  it should "return true when point is right of negative x-axis aligned line" in {
+    val line = new Line(new Point(0, 0), new Point(-5, 0))
+    val point = new Point(-2, 1)
+
+    val result = Geometry invokePrivate isPointRightOfLine(line, point)
+    result shouldBe true
+  }
+
+  it should "return false when point is left of negative x-axis aligned line" in {
+    val line = new Line(new Point(0, 0), new Point(-5, 0))
+    val point = new Point(-2, -1)
+
+    val result = Geometry invokePrivate isPointRightOfLine(line, point)
+    result shouldBe false
+  }
+
+  it should "return true when point is right of y-axis aligned line" in {
+    val line = new Line(new Point(0, 0), new Point(0, 5))
+    val point = new Point(1, 2)
+
+    val result = Geometry invokePrivate isPointRightOfLine(line, point)
+    result shouldBe true
+  }
+
+  it should "return false when point is left of y-axis aligned line" in {
+    val line = new Line(new Point(0, 0), new Point(0, 5))
+    val point = new Point(-1, 2)
+
+    val result = Geometry invokePrivate isPointRightOfLine(line, point)
+    result shouldBe false
+  }
+
+  it should "return true when point is right of negative y-axis aligned line" in {
+    val line = new Line(new Point(0, 0), new Point(0, -5))
+    val point = new Point(-1, -2)
+
+    val result = Geometry invokePrivate isPointRightOfLine(line, point)
+    result shouldBe true
+  }
+
+  it should "return false when point is left of negative y-axis aligned line" in {
+    val line = new Line(new Point(0, 0), new Point(0, -5))
+    val point = new Point(1, -2)
+
+    val result = Geometry invokePrivate isPointRightOfLine(line, point)
     result shouldBe false
   }
 
