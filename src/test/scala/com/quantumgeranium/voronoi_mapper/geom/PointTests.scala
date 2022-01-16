@@ -1,9 +1,8 @@
 package com.quantumgeranium.voronoi_mapper.geom
 
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should
+import com.quantumgeranium.voronoi_mapper.helpers.BaseTestSpec
 
-class PointTests extends AnyFlatSpec with should.Matchers {
+class PointTests extends BaseTestSpec {
 
   val p1 = new Point(1.0, 0.0)
   val p2 = new Point(-1.0, 0.0)
@@ -11,18 +10,27 @@ class PointTests extends AnyFlatSpec with should.Matchers {
   val p4 = new Point(0.0, -1.0)
 
   "A Point" should "calculate distance along x-axis" in {
-    assert(p1.distanceTo(p2) == 2.0)
-    assert(p2.distanceTo(p1) == 2.0)
+    p1.distanceTo(p2) shouldBe 2.0
   }
 
-  "A Point" should "calculate distance along y-axis" in {
-    assert(p3.distanceTo(p4) == 2.0)
-    assert(p4.distanceTo(p3) == 2.0)
+  it should "calculate the same distance along x-axis in reverse" in {
+    p2.distanceTo(p1) shouldBe 2.0
   }
 
-  "A Point" should "calculate distance along the diagonal" in {
-    assert(p1.distanceTo(p3) == math.sqrt(2))
-    assert(p3.distanceTo(p1) == math.sqrt(2))
+  it should "calculate distance along y-axis" in {
+    p3.distanceTo(p4) shouldBe 2.0
+  }
+
+  it should "calculate the same distance along y-axis in reverse" in {
+    p4.distanceTo(p3) shouldBe 2.0
+  }
+
+  it should "calculate distance along the diagonal" in {
+    p1.distanceTo(p3) shouldBe math.sqrt(2)
+  }
+
+  it should "calculate the same distance along the diagonal in reverse" in {
+    p3.distanceTo(p1) shouldBe math.sqrt(2)
   }
 
 }

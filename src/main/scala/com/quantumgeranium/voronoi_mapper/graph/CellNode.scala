@@ -55,7 +55,7 @@ class CellNode(val id: UUID, val position: Point) {
     polygon = vertices.map(v => v.position)
   }
 
-  // Compares two vertices and returns rue if a < b
+  // Compares two vertices and returns true if a < b
   // a < b if it is "before" b in clockwise direction around the center point
   // Written to be used as the comparison function when sorting a list of Vertices
   // Math comes from https://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order
