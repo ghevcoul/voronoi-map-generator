@@ -7,7 +7,8 @@ scalaVersion := "3.0.1"
 
 libraryDependencies += "org.la4j" % "la4j" % "0.6.0"
 libraryDependencies += ("io.jvm.uuid" %% "scala-uuid" % "0.3.1").cross(CrossVersion.for3Use2_13)
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.10" % "test"
 
 // sbt-assembly options
-assemblyJarName in assembly := "voronoi-mapper.jar"
-mainClass in assembly := Some("com.quantumgeranium.voronoi_mapper.VoronoiMapper")
+assembly / assemblyJarName := "voronoi-mapper.jar"
+assembly / mainClass := Some("com.quantumgeranium.voronoi_mapper.VoronoiMapper")
