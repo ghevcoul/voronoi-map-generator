@@ -59,20 +59,14 @@ object Geometry {
 
   // This function assumes that we already know a and b intersect
   def getIntersectionPoint(a: Line, b: Line): Point = {
-    val slopeA = slopeOfLine(a)
-    val interceptA = a.head.y - (slopeA * a.head.x)
-    val slopeB = slopeOfLine(b)
-    val interceptB = b.head.y - (slopeB * b.head.x)
+    if (a.slope == b.slope) throw new Exception(f"Cannot compute intersection of parallel lines:\nLine A: $a\nLine B: $b")
+    
+    val interceptA = a.head.y - (a.slope * a.head.x)
+    val interceptB = b.head.y - (b.slope * b.head.x)
 
-    if (slopeA == slopeB) throw new Exception(f"Cannot compute intersection of parallel lines:\nLine A: $a\nLine B: $b")
-
-    val x = (interceptB - interceptA) / (slopeA - slopeB)
-    val y = (x * slopeA) + interceptA
+    val x = (interceptB - interceptA) / (a.slope - b.slope)
+    val y = (x * a.slope) + interceptA
     new Point(x, y)
-  }
-
-  private def slopeOfLine(a: Line): Double = {
-    (a.head.y - a.tail.y) / (a.head.x - a.tail.x)
   }
 
   private def doBoundingBoxesIntersect(a: Line, b: Line): Boolean = {
@@ -90,7 +84,7 @@ object Geometry {
 
   // Check if line segment a touches or crosses the line defined by b
   private def doesLineSegmentTouchOrCrossLine(a: Line, b: Line): Boolean = {
-    // other crosses this line if the two ends of other are on opposite sides of this
+    // other crosses this line if the two ends of other are on opposite sides of this line
     // e.g. exactly one of the ends is on the right
     // Also check if the ends of other lie on this line
     isPointOnLine(a, b.head) || isPointOnLine(a, b.tail) || (isPointRightOfLine(a, b.head) ^ isPointRightOfLine(a, b.tail))
