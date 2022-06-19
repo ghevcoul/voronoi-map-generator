@@ -18,11 +18,6 @@ object Geometry {
     new Point(xSum, ySum)
   }
 
-  // Cross product of two points
-  def crossProduct(a: Point, b: Point): Double = {
-    (a.x * b.y) - (a.y * b.x)
-  }
-
   // If the lines are perfectly vertical or horizontal, it breaks the math
   // Fudge it a bit by shifting the corners a little bit
   def createBox(xMin: Int, xMax: Int, yMin: Int, yMax: Int): List[Line] = {
@@ -60,7 +55,7 @@ object Geometry {
   // This function assumes that we already know a and b intersect
   def getIntersectionPoint(a: Line, b: Line): Point = {
     if (a.slope == b.slope) throw new Exception(f"Cannot compute intersection of parallel lines:\nLine A: $a\nLine B: $b")
-    
+
     val interceptA = a.head.y - (a.slope * a.head.x)
     val interceptB = b.head.y - (b.slope * b.head.x)
 
@@ -87,7 +82,17 @@ object Geometry {
     // other crosses this line if the two ends of other are on opposite sides of this line
     // e.g. exactly one of the ends is on the right
     // Also check if the ends of other lie on this line
-    isPointOnLine(a, b.head) || isPointOnLine(a, b.tail) || (isPointRightOfLine(a, b.head) ^ isPointRightOfLine(a, b.tail))
+
+    // Do the ends of line b lie on line a?
+    val bHeadOnA = isPointOnLine(a, b.head)
+    val bTailOnA = isPointOnLine(a, b.tail)
+
+    // Are the head and tail of b on opposite sides of a?
+    val bHeadRightOfA = isPointRightOfLine(a, b.head)
+    val bTailRightOfA = isPointRightOfLine(a, b.tail)
+    val bOppositeSides = bHeadRightOfA != bTailRightOfA
+
+    bHeadOnA || bTailOnA || bOppositeSides
   }
 
   private def isPointOnLine(line: Line, p: Point): Boolean = {
@@ -98,7 +103,8 @@ object Geometry {
 
     // Check the cross product of tempL.tail and tempP
     // If abs(cross) < tolerance, the point is on this line
-    math.abs(crossProduct(tempL.tail, tempP)) < tolerance
+    val cross = crossProduct(tempL.tail, tempP)
+    math.abs(cross) < tolerance
   }
 
   private def isPointRightOfLine(line: Line, p: Point): Boolean = {
@@ -109,6 +115,11 @@ object Geometry {
     // Check the cross product of tempL.tail and tempP
     // If negative, point is right of the line
     crossProduct(tempL.tail, tempP) < 0.0
+  }
+
+  // Cross product of two points
+  private def crossProduct(a: Point, b: Point): Double = {
+    (a.x * b.y) - (b.x * a.y)
   }
 
 }
